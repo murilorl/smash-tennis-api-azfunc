@@ -1,0 +1,30 @@
+using System.IO;
+using System.Reflection;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+
+using Core.Configuration;
+
+[assembly: FunctionsStartup(typeof(Core.Startup))]
+
+namespace Core
+{
+    public class Startup : FunctionsStartup
+    {
+
+        public override void Configure(IFunctionsHostBuilder builder)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appSettings.json", false)
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), false)
+                .AddEnvironmentVariables()
+                .Build();
+
+            builder.Services.Configure<ConfigurationItems>(config.GetSection("ConfigurationItems"));
+
+            builder.Services.AddOptions();
+        }
+    }
+}
