@@ -1,10 +1,12 @@
 using System.IO;
 using System.Reflection;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 
 using Core.Configuration;
+using App.Data;
 
 [assembly: FunctionsStartup(typeof(Core.Startup))]
 
@@ -23,6 +25,9 @@ namespace Core
                 .Build();
 
             builder.Services.Configure<ConfigurationItems>(config.GetSection("ConfigurationItems"));
+
+            builder.Services.AddDbContext<AppDbContext>(
+                options => options.UseSqlServer(config.GetSection("ConfigurationItems")["SqlConnectionString"]));
 
             builder.Services.AddOptions();
         }

@@ -4,5 +4,7 @@ namespace Core.Configuration
     {
         public string CommonValue { get; set; }
         public string SecretValue { get; set; }
+
+        public string SqlConnectionString { get; set; }
     }
 }
