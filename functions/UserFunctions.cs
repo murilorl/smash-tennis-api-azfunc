@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -10,9 +12,11 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 using App.Data;
 using App.Data.Model;
+using App.Controllers;
 
 namespace App.Functions
 {
@@ -20,11 +24,11 @@ namespace App.Functions
     public class UserFunctions
     {
 
-        private readonly AppDbContext _dbContext;
+        private readonly AppDbContext _context;
 
         public UserFunctions(AppDbContext dbContext)
         {
-            _dbContext = dbContext;
+            _context = dbContext;
         }
 
         [FunctionName("GetUsers")]
@@ -36,11 +40,12 @@ namespace App.Functions
         {
             if (guid == null)
             {
-                return new OkObjectResult(await GetAllUsers(req, log));
+                // return new OkObjectResult(await GetAllUsers(req, log));
+                return new OkObjectResult(await UserController.GetAllUsers(_context, req, log));
             }
             else
             {
-                var user = await GetUserByGuid(guid, req, log);
+                var user = await UserController.GetUserById(_context, guid, req, log);
                 if (user != null)
                 {
                     return new OkObjectResult(user);
@@ -50,23 +55,41 @@ namespace App.Functions
             }
         }
 
-        private async Task<List<User>> GetAllUsers(HttpRequest req, ILogger log)
+        [FunctionName("CreateUser")]
+        public async Task<IActionResult> Post(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "users")]
+                        HttpRequest req,
+                        CancellationToken cts,
+            ILogger log)
         {
-            // TODO: Implement filters
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            // requestBody = Regex.Replace(requestBody, @"\t|\n|\r", "");
 
-            return await _dbContext.Users
-            .OrderBy(a => a.firstName)
-            .ToListAsync();
+            User data = JsonConvert.DeserializeObject<User>(requestBody);
+            User user = UserController.NewInstance(data);
+
+            var entity = await _context.Users.AddAsync(user, cts);
+            await _context.SaveChangesAsync(cts);
+            return new OkObjectResult(JsonConvert.SerializeObject(entity.Entity));
         }
 
-        private async Task<User> GetUserByGuid(string guid, HttpRequest req, ILogger log)
-        {
-            // TODO: Implement filters
+        /*         private async Task<List<User>> GetAllUsers(HttpRequest req, ILogger log)
+                {
+                    // TODO: Implement filters
 
-            return await _dbContext.Users
-            .Where(a => a.guid.Equals(Guid.Parse(guid)))
-            .FirstOrDefaultAsync();
-        }
+                    return await _dbContext.Users
+                    .OrderBy(a => a.FirstName)
+                    .ToListAsync();
+                }
+
+                private async Task<User> GetUserByGuid(string guid, HttpRequest req, ILogger log)
+                {
+                    // TODO: Implement filters
+
+                    return await _dbContext.Users
+                    .Where(a => a.Id.Equals(Guid.Parse(guid)))
+                    .FirstOrDefaultAsync();
+                } */
     }
 
 }

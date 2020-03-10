@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
     <!-- <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" /> -->
 
@@ -16,6 +20,8 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.5" />
 
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.2" />
+
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 
   </ItemGroup>
   <ItemGroup>
@@ -32,4 +38,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(TargetDir)bin\$(ProjectName).dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+  </Target>
 </Project>
