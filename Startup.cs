@@ -25,14 +25,15 @@ namespace Core
 
             builder.Services.Configure<ConfigurationItems>(config.GetSection("ConfigurationItems"));
 
-            builder.Services.AddDbContext<AppDbContext>(
-                options => options.UseSqlServer(config.GetSection("ConfigurationItems")["SqlConnectionString"]));
+            /*             builder.Services.AddDbContext<AppDbContext>(
+                            options => options.UseSqlServer(config.GetSection("ConfigurationItems")["SqlConnectionString"])); */
+            builder.Services.AddDbContext<AppDbContext>();
 
-             builder.Services.AddTransient<IUserService, UserService>();
-/*             builder.Services.AddTransient((s) =>
-            {
-                return new UserService();
-            }); */
+            builder.Services.AddTransient<IUserService, UserService>();
+            /*             builder.Services.AddTransient((s) =>
+                        {
+                            return new UserService();
+                        }); */
 
             builder.Services.AddOptions();
         }
