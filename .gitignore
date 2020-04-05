@@ -10,6 +10,9 @@ local.settings.json
 *.userosscache
 *.sln.docstates
 
+# Entity Framework migrations
+Migrations
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

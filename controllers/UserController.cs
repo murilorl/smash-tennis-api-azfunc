@@ -17,12 +17,26 @@ namespace App.Controllers
 {
     public class UserController
     {
+
         public static async Task<User> GetUserById(AppDbContext context, string guid, HttpRequest req, ILogger log)
         {
             // TODO: Implement filters
 
             return await context.Users
-            .Where(a => a.Id.Equals(Guid.Parse(guid)))
+            .Where(u =>
+                u.Id.Equals(Guid.Parse(guid)) &&
+                u.Active != false
+            )
+            .FirstOrDefaultAsync();
+        }
+        public static async Task<User> GetUserbyFacebookCredentials(AppDbContext context, User user, HttpRequest req, ILogger log)
+        {
+            return await context.Users
+            .Where(u =>
+                u.Active != false &&
+                (u.FacebookId.Equals(user.FacebookId) ||
+                u.Email.Equals(user.Email))
+            )
             .FirstOrDefaultAsync();
         }
         public static async Task<List<User>> GetAllUsers(AppDbContext context, HttpRequest req, ILogger log)

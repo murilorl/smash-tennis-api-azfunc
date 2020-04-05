@@ -19,22 +19,269 @@ namespace azfunc_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("App.Data.Model.BackhandStyle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("NAME")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BACKHAND_STYLES");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Uma mão"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Duas mãos"
+                        });
+                });
+
+            modelBuilder.Entity("App.Data.Model.DominantHand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AltName")
+                        .IsRequired()
+                        .HasColumnName("ALT_NAME")
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("NAME")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DOMINANT_HAND");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AltName = "Destro",
+                            Name = "Direita"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AltName = "Canhoto",
+                            Name = "Esquerda"
+                        });
+                });
+
+            modelBuilder.Entity("App.Data.Model.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ACTIVE")
+                        .HasColumnType("BIT")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("Created")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CREATED")
+                        .HasColumnType("DATETIME2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("NAME")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
+
+                    b.Property<DateTime>("Updated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("UPDATED")
+                        .HasColumnType("DATETIME2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ROLES");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b53334da-a44e-48ef-ac90-dd46ee5c9d01"),
+                            Active = false,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Administrador",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("d13c6a0b-79ec-423a-805a-d3bb3b71d59a"),
+                            Active = false,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Tenista",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
             modelBuilder.Entity("App.Data.Model.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ACTIVE")
+                        .HasColumnType("BIT")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("BackhandStyleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Birthday")
+                        .HasColumnName("BIRTHDAY")
+                        .HasColumnType("DATE");
+
+                    b.Property<DateTime>("Created")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CREATED")
+                        .HasColumnType("DATETIME2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("DominantHandId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnName("EMAIL")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
+
+                    b.Property<string>("FacebookId")
+                        .HasColumnName("FACEBOOK_ID")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnName("FIRST_NAME")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int>("Height")
+                        .HasColumnName("HEIGHT")
+                        .HasColumnType("INT");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnName("LAST_LOGIN")
+                        .HasColumnType("DATETIME2");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnName("LAST_NAME")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnName("MIDDLE_NAME")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Password")
+                        .HasColumnName("PASSWORD")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnName("SHORT_NAME")
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
+
+                    b.Property<DateTime>("Updated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("UPDATED")
+                        .HasColumnType("DATETIME2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("Weight")
+                        .HasColumnName("WEIGHT")
+                        .HasColumnType("INT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("USER");
+                    b.HasIndex("BackhandStyleId");
+
+                    b.HasIndex("DominantHandId");
+
+                    b.ToTable("USERS");
+                });
+
+            modelBuilder.Entity("App.Data.Model.UserRoles", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("USER_ROLES");
+                });
+
+            modelBuilder.Entity("App.Data.Model.User", b =>
+                {
+                    b.HasOne("App.Data.Model.BackhandStyle", "BackhandStyle")
+                        .WithMany("Users")
+                        .HasForeignKey("BackhandStyleId")
+                        .HasConstraintName("FK_BACKHAND_STYLE_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Data.Model.DominantHand", "DominantHand")
+                        .WithMany("Users")
+                        .HasForeignKey("DominantHandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("App.Data.Model.UserRoles", b =>
+                {
+                    b.HasOne("App.Data.Model.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Data.Model.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -7,14 +7,13 @@ using Microsoft.Extensions.Configuration;
 
 using Core.Configuration;
 using App.Data;
+using App.Service;
 
 [assembly: FunctionsStartup(typeof(Core.Startup))]
-
 namespace Core
 {
     public class Startup : FunctionsStartup
     {
-
         public override void Configure(IFunctionsHostBuilder builder)
         {
             var config = new ConfigurationBuilder()
@@ -28,6 +27,12 @@ namespace Core
 
             builder.Services.AddDbContext<AppDbContext>(
                 options => options.UseSqlServer(config.GetSection("ConfigurationItems")["SqlConnectionString"]));
+
+             builder.Services.AddTransient<IUserService, UserService>();
+/*             builder.Services.AddTransient((s) =>
+            {
+                return new UserService();
+            }); */
 
             builder.Services.AddOptions();
         }
