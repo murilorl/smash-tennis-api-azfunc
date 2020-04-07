@@ -127,7 +127,7 @@ namespace azfunc_api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b53334da-a44e-48ef-ac90-dd46ee5c9d01"),
+                            Id = new Guid("c2b7d9d3-529b-4cf3-b0c1-9d0cb919f884"),
                             Active = false,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Administrador",
@@ -135,7 +135,7 @@ namespace azfunc_api.Migrations
                         },
                         new
                         {
-                            Id = new Guid("d13c6a0b-79ec-423a-805a-d3bb3b71d59a"),
+                            Id = new Guid("643d38f7-33e5-4246-ac79-a4bea19421c2"),
                             Active = false,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Tenista",
@@ -234,6 +234,9 @@ namespace azfunc_api.Migrations
                     b.HasIndex("BackhandStyleId");
 
                     b.HasIndex("DominantHandId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("USERS");
                 });

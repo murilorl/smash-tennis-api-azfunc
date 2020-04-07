@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace App.Data.Model
 {
@@ -21,8 +22,9 @@ namespace App.Data.Model
         public BackhandStyle BackhandStyle { get; set; }
         public int Weight { get; set; }
         public int Height { get; set; }
-        internal string FacebookId { get; set; }
-        internal string Password { get; set; }
+        public string FacebookId { get; set; }
+        [JsonIgnore]
+        public string Password { get; set; }
         public ICollection<UserRoles> UserRoles { get; set; }
         public DateTime LastLogin { get; set; }
     }

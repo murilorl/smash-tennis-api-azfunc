@@ -11,24 +11,24 @@ namespace App.Data
 
     public class AppDbContext : DbContext
     {
-        private readonly ConfigurationItems _configurationItems;
+        // private readonly ConfigurationItems _configurationItems;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
         }
-        public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<ConfigurationItems> configurationItems) : base(options)
+/*         public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<ConfigurationItems> configurationItems) : base(options)
         {
             _configurationItems = configurationItems.Value;
-        }
+        } */
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+/*         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var sql = _configurationItems.SqlConnectionString;
             //Inject IOptions<ConfigurationItems> configurationItems in the constructor
             //get ConnectionString thru something like configurationItems.GetSection("ConfigurationItems")["SqlConnectionString"])
             optionsBuilder.UseSqlServer(sql);
-        }
+        } */
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

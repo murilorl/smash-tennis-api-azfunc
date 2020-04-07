@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,16 +26,17 @@ namespace Core
 
             builder.Services.Configure<ConfigurationItems>(config.GetSection("ConfigurationItems"));
 
-            /*             builder.Services.AddDbContext<AppDbContext>(
-                            options => options.UseSqlServer(config.GetSection("ConfigurationItems")["SqlConnectionString"])); */
-            builder.Services.AddDbContext<AppDbContext>();
+            builder.Services.AddDbContext<AppDbContext>(
+               options => options.UseSqlServer(config.GetSection("ConfigurationItems")["SqlConnectionString"]));
+            // builder.Services.AddDbContext<AppDbContext>();
 
-            builder.Services.AddTransient<IUserService, UserService>();
-            /*             builder.Services.AddTransient((s) =>
-                        {
-                            return new UserService();
-                        }); */
+            builder.Services.AddMvcCore()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });
 
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddOptions();
         }
     }

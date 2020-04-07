@@ -7,9 +7,16 @@ namespace App.Data.Model.Configuration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
+
+            // Table name and primary key
             builder
                 .ToTable("USERS")
                 .HasKey(u => u.Id);
+
+            // Indexes
+            builder
+                 .HasIndex(p => p.Email)
+                 .IsUnique();
 
             // Foreign keys
             builder
@@ -49,6 +56,7 @@ namespace App.Data.Model.Configuration
                 .HasColumnName("EMAIL")
                 .HasMaxLength(70)
                 .IsRequired();
+                
 
             builder.Property(u => u.FirstName)
                 .HasColumnName("FIRST_NAME")
@@ -88,7 +96,7 @@ namespace App.Data.Model.Configuration
             builder.Property(u => u.Password)
                 .HasColumnName("PASSWORD")
                 .HasMaxLength(40);
-                
+
             builder.Property(p => p.LastLogin)
                 .HasColumnName("LAST_LOGIN")
                 .HasColumnType("DATETIME2");
