@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
 using App.Data;
@@ -21,18 +22,12 @@ namespace App.Service
 
         public async Task<User> GetUserById(Guid id)
         {
-            return await _context.Users
-                .Where(u =>
-                    u.Id.Equals(id) &&
-                    u.Active != false)
-                .FirstOrDefaultAsync();
+            return await _context.Users.FindAsync(id);
         }
 
         public async Task<IList<User>> GetAllUsers()
         {
             return await _context.Users
-                .Where(u =>
-                    u.Active == true)
                 .Include(u => u.DominantHand)
                 .OrderBy(u => u.FirstName)
                 .ToListAsync();
@@ -45,33 +40,11 @@ namespace App.Service
             //Email
             return await _context.Users
                 .Where(u =>
-                    u.Active == true &&
                     u.Email.Equals(queryParams["Email"]) &&
                     u.FacebookId.Equals(queryParams["FacebookId"]))
                 .Include(u => u.DominantHand)
                 .OrderBy(u => u.Created)
                 .ToListAsync();
-            /*           string sqlProjection = "SELECT * FROM Users";
-                      List<string> sqlPredicate = null;
-                      foreach (KeyValuePair<string, string> kvp in queryParams)
-                      {
-                          if (sqlPredicate == null)
-                          {
-                              sqlPredicate = new List<string>();
-                          }
-                          sqlPredicate.Add(String.Format("u.{0} == {'1'}", kvp.Key, kvp.Value));
-                      }
-
-                      if (sqlPredicate != null)
-                      {
-                          sqlProjection = sqlProjection + " WHERE " + String.Join(" AND", sqlPredicate);
-                      }
-
-                      var users = _context.Users
-                          .FromSqlRaw(sqlProjection)
-                          .ToListAsync();
-
-                      return users; */
         }
         public async Task<User> Create(User user)
         {
@@ -80,6 +53,70 @@ namespace App.Service
             var entity = await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return entity.Entity;
+        }
+
+        public async Task<User> Update(Guid id, User user)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException("The user provided does not contain an Id");
+            }
+
+            User cUser = await GetUserById(id);
+
+            if (cUser == null)
+            {
+                throw new ApplicationException(String.Format("User not found for Id {0}", id));
+            }
+
+            cUser.Updated = DateTime.Now;
+            cUser.LastName = user.LastName;
+
+            _context.Users.Update(cUser);
+            await _context.SaveChangesAsync();
+
+            return cUser;
+        }
+
+        public async Task UpdatePartial(Guid id, JsonPatchDocument<User> user)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException("The user provided does not contain an Id");
+            }
+
+            User cUser = await GetUserById(id);
+
+            if (cUser == null)
+            {
+                throw new ApplicationException(String.Format("User not found for Id {0}", id));
+            }
+
+            user.ApplyTo(cUser);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task Delete(Guid id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException("The user provided does not contain an Id");
+            }
+
+            User cUser = await GetUserById(id);
+
+            if (cUser == null)
+            {
+                throw new ApplicationException(String.Format("User not found for Id {0}", id));
+            }
+
+            cUser.Updated = DateTime.Now;
+            cUser.Active = false;
+
+            _context.Users.Update(cUser);
+            await _context.SaveChangesAsync();
+
         }
     }
 }

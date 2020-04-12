@@ -5,6 +5,6 @@ namespace App.Data.Model
     public class Role : BaseEntity
     {
         public string Name { get; set; }
-        public ICollection<UserRoles> UserRoles { get; set; }
+        public virtual ICollection<UserRoles> UserRoles { get; set; }
     }
 }

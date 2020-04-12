@@ -30,6 +30,9 @@ namespace App.Data.Model.Configuration
                 .WithMany(dh => dh.Users)
                 .HasForeignKey(u => u.DominantHandId);
 
+            //Query fitlers; for things like 'soft delete'
+            builder.HasQueryFilter(e => e.Active == true);
+
             //Entity attributes
             builder.Property(u => u.Id)
                 .HasColumnName("ID");
@@ -56,7 +59,7 @@ namespace App.Data.Model.Configuration
                 .HasColumnName("EMAIL")
                 .HasMaxLength(70)
                 .IsRequired();
-                
+
 
             builder.Property(u => u.FirstName)
                 .HasColumnName("FIRST_NAME")

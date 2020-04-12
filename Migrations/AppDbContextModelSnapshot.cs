@@ -127,7 +127,7 @@ namespace azfunc_api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c2b7d9d3-529b-4cf3-b0c1-9d0cb919f884"),
+                            Id = new Guid("abc06030-7fbd-441b-9a8f-93dd30b03d14"),
                             Active = false,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Administrador",
@@ -135,7 +135,7 @@ namespace azfunc_api.Migrations
                         },
                         new
                         {
-                            Id = new Guid("643d38f7-33e5-4246-ac79-a4bea19421c2"),
+                            Id = new Guid("84595f10-71a0-4636-8b56-37ce392d70cd"),
                             Active = false,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Tenista",
@@ -159,7 +159,7 @@ namespace azfunc_api.Migrations
                     b.Property<int>("BackhandStyleId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Birthday")
+                    b.Property<DateTime?>("Birthday")
                         .HasColumnName("BIRTHDAY")
                         .HasColumnType("DATE");
 
@@ -189,7 +189,7 @@ namespace azfunc_api.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<int>("Height")
+                    b.Property<int?>("Height")
                         .HasColumnName("HEIGHT")
                         .HasColumnType("INT");
 
@@ -225,7 +225,7 @@ namespace azfunc_api.Migrations
                         .HasColumnType("DATETIME2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<int>("Weight")
+                    b.Property<int?>("Weight")
                         .HasColumnName("WEIGHT")
                         .HasColumnType("INT");
 
