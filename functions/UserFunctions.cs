@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -77,11 +78,22 @@ namespace App.Functions
             {
                 returnValue = new CreatedObjectResult(await _userService.Create(user));
             }
+            catch (ArgumentNullException ane)
+            {
+                log.LogWarning(ane.ToString());
+                returnValue = new BadRequestObjectResult(ane.Message);
+            }
+            catch (ArgumentException ae)
+            {
+                log.LogWarning(ae.ToString());
+                returnValue = new BadRequestObjectResult(ae.Message);
+            }
             catch (Exception e)
             {
-                log.LogError("An exception occurred when tried to create user. Message: {0}", e);
-                returnValue = new BadRequestObjectResult(String.Format("An exception occurred when tried to create user. Message: {0}", e));
+                log.LogError("An exception occurred when creating a user. Message: {0}", e);
+                returnValue = new BadRequestObjectResult(String.Format("Um erro inesperado ocorreu ao criar o usuário. Por favor, entre em contato com o administrador.", e));
             }
+
             return returnValue;
         }
 

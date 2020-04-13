@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace App.Data.Model
@@ -13,6 +14,8 @@ namespace App.Data.Model
         public DateTime Updated { get; set; }
         [JsonIgnore]
         public bool Active { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.JsonPatch;
@@ -22,7 +23,15 @@ namespace App.Service
 
         public async Task<User> GetUserById(Guid id)
         {
-            return await _context.Users.FindAsync(id);
+            return await GetUserById(id, false);
+        }
+
+        public async Task<User> GetUserById(Guid id, bool includeInactive)
+        {
+            if (includeInactive)
+                return await _context.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id.Equals(id));
+            else
+                return await _context.Users.FindAsync(id);
         }
 
         public async Task<IList<User>> GetAllUsers()
@@ -48,6 +57,16 @@ namespace App.Service
         }
         public async Task<User> Create(User user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException("User is required");
+            }
+
+            if (!await IsEmailAvailable(user.Email))
+            {
+                throw new ArgumentException(String.Format("O endereço de email [{0}] não está disponivel.", user.Email));
+            }
+
             user.Id = Guid.NewGuid();
 
             var entity = await _context.Users.AddAsync(user);
@@ -93,6 +112,7 @@ namespace App.Service
             }
 
             user.ApplyTo(cUser);
+            cUser.Updated = DateTime.Now;
             await _context.SaveChangesAsync();
 
         }
@@ -117,6 +137,36 @@ namespace App.Service
             _context.Users.Update(cUser);
             await _context.SaveChangesAsync();
 
+        }
+
+        public void checkEmailAddress(String email)
+        {
+            if (String.IsNullOrEmpty(email))
+            {
+                throw new ArgumentNullException("The email cannot be null or empty");
+            }
+
+            if (!isValidEmail(email))
+            {
+                throw new ArgumentException(String.Format("The email [{0}] is not valid", email));
+            }
+
+        }
+
+        public bool isValidEmail(String email)
+        {
+            return new EmailAddressAttribute().IsValid(email);
+        }
+
+        public async Task<bool> IsEmailAvailable(String email)
+        {
+            checkEmailAddress(email);
+
+            User user = await _context.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+
+            return user == null;
         }
     }
 }
