@@ -168,5 +168,34 @@ namespace App.Service
 
             return user == null;
         }
+
+        public async Task<User> SignInWithFacebook(User user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException("O usuário é obrigatório");
+            }
+
+            if (String.IsNullOrEmpty(user.Email) || String.IsNullOrEmpty(user.FacebookId))
+            {
+                throw new ArgumentException("Os campos Email e FacebookId são obrigatórios.");
+            }
+
+            User cUser = await _context.Users
+                .Where(u =>
+                    u.Email == user.Email &&
+                    u.FacebookId == user.FacebookId)
+                .FirstAsync();
+
+            if (cUser != null)
+            {
+                cUser.LastLogin = DateTime.Now;
+
+                _context.Users.Update(cUser);
+                await _context.SaveChangesAsync();
+            }
+
+            return cUser;
+        }
     }
 }

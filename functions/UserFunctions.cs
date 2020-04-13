@@ -143,6 +143,11 @@ namespace App.Functions
                 await _userService.UpdatePartial(guid, patchUser);
                 returnValue = new NoContentResult();
             }
+            catch (ApplicationException ae)
+            {
+                log.LogWarning(ae.ToString());
+                returnValue = new NotFoundObjectResult(ae.Message);
+            }
             catch (Exception e)
             {
                 log.LogError("An exception occurred when partially updating user. Message: {0}", e);
@@ -167,10 +172,48 @@ namespace App.Functions
                 await _userService.Delete(guid);
                 returnValue = new OkResult();
             }
+            catch (ApplicationException ae)
+            {
+                log.LogWarning(ae.ToString());
+                returnValue = new NotFoundObjectResult(ae.Message);
+            }
             catch (Exception e)
             {
                 log.LogError("An exception occurred when deleting user. Message: {0}", e);
                 returnValue = new BadRequestObjectResult(String.Format("An exception occurred when deleting user. Message: {0}", e));
+            }
+            return returnValue;
+        }
+        [FunctionName("UsersSignInFacebook")]
+        public async Task<IActionResult> FacebookSignin(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "users/signin/fb")]
+            HttpRequest req,
+            CancellationToken cts,
+            ILogger log)
+        {
+            IActionResult returnValue = null;
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            User user = JsonSerializer.Deserialize<User>(requestBody);
+
+            if (user.FacebookId == null || user.Email == null)
+            {
+                return new BadRequestObjectResult("Os campos FacebookId e Email são obrigatórios para o signin do facebook");
+            }
+
+            try
+            {
+                user = await _userService.SignInWithFacebook(user);
+                returnValue = new OkObjectResult(user);
+            }
+            catch (ApplicationException ae)
+            {
+                log.LogWarning(ae.ToString());
+                returnValue = new NotFoundObjectResult(ae.Message);
+            }
+            catch (Exception e)
+            {
+                log.LogError("An exception occurred when during sigin with Facebook credentials. Message: {0}", e);
+                returnValue = new BadRequestObjectResult("Um error inexperado ocorreu durante o login com a conta do Facebook.");
             }
             return returnValue;
         }

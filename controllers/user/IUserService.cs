@@ -19,5 +19,6 @@ namespace App.Service
         Task UpdatePartial(Guid id, JsonPatchDocument<User> user);
         Task Delete(Guid id);
         Task<bool> IsEmailAvailable(String email);
+        Task<User> SignInWithFacebook(User user);
     }
 }
