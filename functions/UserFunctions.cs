@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using App.Data.Model;
 using App.Functions.Responses;
 using App.Service;
+using App.Exceptions.Auth;
 
 namespace App.Functions
 {
@@ -214,6 +215,39 @@ namespace App.Functions
             {
                 log.LogError("An exception occurred when during sigin with Facebook credentials. Message: {0}", e);
                 returnValue = new BadRequestObjectResult("Um error inexperado ocorreu durante o login com a conta do Facebook.");
+            }
+            return returnValue;
+        }
+
+        [FunctionName("UsersSignInBasic")]
+        public async Task<IActionResult> BasicSignin(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "users/signin/basic")]
+            HttpRequest req,
+            CancellationToken cts,
+            ILogger log)
+        {
+            IActionResult returnValue = null;
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            User user = JsonSerializer.Deserialize<User>(requestBody);
+
+            if (user.Email == null || user.Password == null)
+            {
+                return new BadRequestObjectResult("Os campos Email e Senha são obrigatórios.");
+            }
+
+            try
+            {
+                returnValue = new OkObjectResult(await _userService.SignInWithBasicAuth(user));
+            }
+            catch (BasicAuthenticationException ae)
+            {
+                log.LogWarning(ae.ToString());
+                returnValue = new BadRequestObjectResult(ae.Message);
+            }
+            catch (Exception e)
+            {
+                log.LogError("An exception occurred when during sigin with basic auth. Message: {0}", e);
+                returnValue = new BadRequestObjectResult("Um error inexperado ocorreu durante o login.");
             }
             return returnValue;
         }

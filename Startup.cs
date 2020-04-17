@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Core.Configuration;
 using App.Data;
 using App.Service;
+using App.Service.Auth;
 
 [assembly: FunctionsStartup(typeof(Core.Startup))]
 namespace Core
@@ -37,6 +38,7 @@ namespace Core
                 });
 
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
             builder.Services.AddOptions();
         }
     }

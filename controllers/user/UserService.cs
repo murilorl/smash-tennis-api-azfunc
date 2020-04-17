@@ -9,16 +9,21 @@ using Microsoft.EntityFrameworkCore;
 
 using App.Data;
 using App.Data.Model;
+using App.Exceptions.Auth;
+using App.Service.Auth;
+
 
 namespace App.Service
 {
     public class UserService : IUserService
     {
         private readonly AppDbContext _context;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(AppDbContext dbContext)
+        public UserService(AppDbContext dbContext, IPasswordHasher passwordHasher)
         {
             _context = dbContext;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<User> GetUserById(Guid id)
@@ -68,6 +73,10 @@ namespace App.Service
             }
 
             user.Id = Guid.NewGuid();
+            if (!String.IsNullOrWhiteSpace(user.Password))
+            {
+                user.Password = _passwordHasher.HashPassword(user.Password);
+            }
 
             var entity = await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -194,6 +203,36 @@ namespace App.Service
                 _context.Users.Update(cUser);
                 await _context.SaveChangesAsync();
             }
+
+            return cUser;
+        }
+
+        public async Task<User> SignInWithBasicAuth(User user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException("O usuário é obrigatório");
+            }
+
+            if (String.IsNullOrEmpty(user.Email) || String.IsNullOrEmpty(user.Password))
+            {
+                throw new ArgumentException("Os campos Email e Senha são obrigatórios.");
+            }
+
+            User cUser = await _context.Users
+                .Where(u =>
+                    u.Email == user.Email)
+                .FirstAsync();
+
+            if (cUser == null ||
+                (cUser != null && _passwordHasher.VerifyHashedPassword(cUser.Password, user.Password).Equals(PasswordVerificationResult.Failed)))
+            {
+                throw new BasicAuthenticationException();
+            }
+
+            cUser.LastLogin = DateTime.Now;
+            _context.Users.Update(cUser);
+            await _context.SaveChangesAsync();
 
             return cUser;
         }

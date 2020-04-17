@@ -127,7 +127,7 @@ namespace azfunc_api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("abc06030-7fbd-441b-9a8f-93dd30b03d14"),
+                            Id = new Guid("56be8eb9-9464-4de3-a744-577e46e3fee5"),
                             Active = false,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Administrador",
@@ -135,7 +135,7 @@ namespace azfunc_api.Migrations
                         },
                         new
                         {
-                            Id = new Guid("84595f10-71a0-4636-8b56-37ce392d70cd"),
+                            Id = new Guid("8fa145f7-5d50-4277-8cc0-8da6448c98cd"),
                             Active = false,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Tenista",
@@ -210,8 +210,8 @@ namespace azfunc_api.Migrations
 
                     b.Property<string>("Password")
                         .HasColumnName("PASSWORD")
-                        .HasColumnType("nvarchar(40)")
-                        .HasMaxLength(40);
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
 
                     b.Property<string>("ShortName")
                         .IsRequired()

@@ -20,5 +20,6 @@ namespace App.Service
         Task Delete(Guid id);
         Task<bool> IsEmailAvailable(String email);
         Task<User> SignInWithFacebook(User user);
+        Task<User> SignInWithBasicAuth(User user);
     }
 }

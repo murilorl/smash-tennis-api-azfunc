@@ -98,7 +98,7 @@ namespace App.Data.Model.Configuration
 
             builder.Property(u => u.Password)
                 .HasColumnName("PASSWORD")
-                .HasMaxLength(40);
+                .HasMaxLength(200);
 
             builder.Property(p => p.LastLogin)
                 .HasColumnName("LAST_LOGIN")
