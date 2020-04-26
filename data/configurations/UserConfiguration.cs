@@ -18,17 +18,17 @@ namespace App.Data.Model.Configuration
                  .HasIndex(p => p.Email)
                  .IsUnique();
 
-            // Foreign keys
+/*             // Foreign keys
             builder
                 .HasOne<BackhandStyle>(u => u.BackhandStyle)
                 .WithMany(bhs => bhs.Users)
                 .HasForeignKey(u => u.BackhandStyleId)
-                .HasConstraintName("FK_BACKHAND_STYLE_ID");
+                .HasConstraintName("FK_BACKHAND_STYLE_ID"); */
 
-            builder
-                .HasOne<DominantHand>(u => u.DominantHand)
-                .WithMany(dh => dh.Users)
-                .HasForeignKey(u => u.DominantHandId);
+            /*             builder
+                            .HasOne<DominantHand>(u => u.DominantHand)
+                            .WithMany(dh => dh.Users)
+                            .HasForeignKey(u => u.DominantHandId); */
 
             //Query fitlers; for things like 'soft delete'
             builder.HasQueryFilter(e => e.Active == true);
@@ -103,6 +103,96 @@ namespace App.Data.Model.Configuration
             builder.Property(p => p.LastLogin)
                 .HasColumnName("LAST_LOGIN")
                 .HasColumnType("DATETIME2");
+
+            //Seed data
+            /*
+            builder
+                .HasData(
+                    new User
+                    {
+                        Email = "john.doe@gmail.com",
+                        FirstName = "John",
+                        LastName = "Doe",
+                        ShortName = "john-doe",
+                        DominantHandId = 1,
+                        BackhandStyleId = 1,
+                        Weight = 86,
+                        Height = 178
+                    },
+                    new User
+                    {
+                        Email = "novak.djokovic@gmail.com",
+                        FirstName = "Novak",
+                        LastName = "Djokovic",
+                        ShortName = "novak-djokovic",
+                        DominantHandId = 1,
+                        BackhandStyleId = 2,
+                        Password = "12345678",
+                        Weight = 77,
+                        Height = 188
+                    },
+                    new User
+                    {
+                        Email = "rafael.nadal@gmail.com",
+                        FirstName = "Rafael",
+                        LastName = "Nadal",
+                        ShortName = "rafael-nadal",
+                        DominantHandId = 2,
+                        BackhandStyleId = 2,
+                        Password = "12345678",
+                        Weight = 85,
+                        Height = 185
+                    },
+                    new User
+                    {
+                        Email = "dominic.thiem@gmail.com",
+                        FirstName = "Dominic",
+                        LastName = "Thiem",
+                        ShortName = "dominic-thiem",
+                        DominantHandId = 1,
+                        BackhandStyleId = 1,
+                        Password = "12345678",
+                        Weight = 79,
+                        Height = 185
+                    },
+                    new User
+                    {
+                        Email = "roger.federer@gmail.com",
+                        FirstName = "Roger",
+                        LastName = "Federer",
+                        ShortName = "roger-federer",
+                        DominantHandId = 1,
+                        BackhandStyleId = 1,
+                        Password = "12345678",
+                        Weight = 85,
+                        Height = 185
+                    },
+                    new User
+                    {
+                        Email = "daniil.medvedev@gmail.com",
+                        FirstName = "Daniil",
+                        LastName = "Medvedev",
+                        ShortName = "daniil-medvedev",
+                        DominantHandId = 1,
+                        BackhandStyleId = 2,
+                        Password = "12345678",
+                        Weight = 83,
+                        Height = 198
+                    },
+                    new User
+                    {
+                        Email = "stefanos.tsitsipas@gmail.com",
+                        FirstName = "Stefanos",
+                        LastName = "Tsitsipas",
+                        ShortName = "stefanos-tsitsipas",
+                        DominantHandId = 1,
+                        BackhandStyleId = 2,
+                        Password = "12345678",
+                        Weight = 89,
+                        Height = 193
+                    }
+                );
+                */
         }
     }
 }

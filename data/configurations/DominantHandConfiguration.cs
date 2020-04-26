@@ -14,6 +14,12 @@ namespace App.Data.Model.Configuration
             builder.Property(dh => dh.Id)
                 .HasColumnName("ID");
 
+            // Foreign keys
+            builder
+                .HasMany(dh => dh.Users)
+                .WithOne(u => u.DominantHand)
+                .IsRequired();
+
             builder.Property(dh => dh.Name)
                 .HasColumnName("NAME")
                 .HasMaxLength(70)

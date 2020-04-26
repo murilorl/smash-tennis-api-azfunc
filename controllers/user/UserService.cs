@@ -1,8 +1,11 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+
+using System.Reflection;
 
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
@@ -49,17 +52,70 @@ namespace App.Service
 
         public async Task<List<User>> GetAllUsers(IDictionary<string, string> queryParams)
         {
+            IQueryable<User> result = null;
 
-            //FacebookId
-            //Email
-            return await _context.Users
-                .Where(u =>
-                    u.Email.Equals(queryParams["Email"]) &&
-                    u.FacebookId.Equals(queryParams["FacebookId"]))
+            if (QueryableUtil.IncludeInactive(queryParams))
+            {
+                result = _context.Users
                 .Include(u => u.DominantHand)
-                .OrderBy(u => u.Created)
-                .ToListAsync();
+                .IgnoreQueryFilters()
+                .AsQueryable();
+            }
+            else
+            {
+                result = _context.Users
+               .Include(u => u.DominantHand)
+               .AsQueryable();
+            }
+
+            Type entityType = typeof(User);
+
+            // Ensure the name (`u`) for the ParameterExpression matches what was given for the IQueryable (e.g. _context.Users.Include(u ...)
+            ParameterExpression parameterExpression = Expression.Parameter(entityType, "u");
+            Expression where = QueryableUtil.MakeWhereClause(entityType, parameterExpression, queryParams);
+            if (where != null)
+            {
+                result = result.Where(Expression.Lambda<Func<User, bool>>(where, parameterExpression));
+            }
+
+            // QueryableUtil.MakeWhereClause();
+            /*             _context.Users
+                            .Include(u => u.DominantHand)
+                            .IgnoreQueryFilters()
+                            .Where(u => u.Email == "daniil.medvedev@gmail.com"); */
+
+            return await result.ToListAsync();
+
+            /*           // IQueryable<User> result = null;
+                      IQueryable<User> result = _context.Users
+                          .Include(u => u.DominantHand);
+
+                      Type entityType = typeof(User);
+                      ParameterExpression parameterExpression = Expression.Parameter(entityType, "e"); // e =>
+                      Expression where = QueryableUtil.MakeWhereClause(result, entityType, Expression.Parameter(entityType, "e"), queryParams);
+                      if (where != null)
+                      {
+                          result = result.Where(Expression.Lambda<Func<User, bool>>(where, parameterExpression));
+                          // result.Where(where);
+                      }
+
+                      QueryableUtil.IgnoreQueryFilters(result, queryParams); */
+
+            // IgnoreQueryFilters(result, queryParams);
+            // MakeWhereClause(result, queryParams);
+
+            // result.ToString();
+            // return await result.ToListAsync();
         }
+
+        /*         public void IgnoreQueryFilters(IQueryable<User> result, IDictionary<string, string> queryParams)
+                {
+                    if (queryParams.ContainsKey("IncludeInactive") && queryParams["IncludeInactive"].Equals("true"))
+                    {
+                        result
+                        .IgnoreQueryFilters();
+                    }
+                } */
         public async Task<User> Create(User user)
         {
             if (user == null)
@@ -235,6 +291,107 @@ namespace App.Service
             await _context.SaveChangesAsync();
 
             return cUser;
+        }
+        private void MakeWhereClause(IQueryable<User> result, IDictionary<string, string> queryParams)
+        {
+
+            Expression where = null;
+
+            Type entityType = typeof(User);
+            ParameterExpression parameterExpression = Expression.Parameter(entityType, "e"); // e =>
+
+            foreach (KeyValuePair<string, string> kvp in queryParams)
+            {
+                if (kvp.Key != "sort" && kvp.Key != "IncludeInactive")
+                {
+                    if (where == null)
+                    {
+                        where = MakePropertyClause(entityType, parameterExpression, kvp.Key, kvp.Value);
+                    }
+                    else
+                    {
+                        where = Expression.And(where, MakePropertyClause(entityType, parameterExpression, kvp.Key, kvp.Value));
+                    }
+                }
+            }
+
+            if (where != null && result == null)
+            {
+                result = _context.Users
+                    .Where(Expression.Lambda<Func<User, bool>>(where, parameterExpression));
+            }
+        }
+
+        private Expression MakePropertyClause(Type entityType, ParameterExpression parameterExpression, string memberName, string memberValue)
+        {
+            PropertyInfo propertyInfo = entityType.GetProperty(memberName);
+
+            if (propertyInfo == null)
+            {
+                throw new ArgumentException(String.Format("O campo {0} não existe.", memberName));
+            }
+
+            Expression expression = null;
+
+            switch (propertyInfo.PropertyType.Name)
+            {
+                case "Int32":
+                    expression = MakePropertyIntClause(parameterExpression, memberName, memberValue);
+                    break;
+
+                // String
+                default:
+                    expression = MakePropertyStringClause(parameterExpression, memberName, memberValue);
+                    break;
+            }
+            return expression;
+        }
+
+        private Expression MakePropertyStringClause(ParameterExpression parameterExpression, string memberName, string memberValue)
+        {
+            Expression fieldProperty = Expression.Property(parameterExpression, memberName);
+            Expression fieldClause = Expression.Equal(fieldProperty, Expression.Constant(memberValue));
+
+            return Expression.Equal(fieldProperty, Expression.Constant(memberValue));
+            // return Expression.Lambda<Func<User, bool>>(fieldClause, parameterExpression);
+            // return Expression.Equal(fieldProperty, Expression.Constant(memberValue));
+        }
+
+        // private Expression<Func<User, bool>> MakePropertyIntClause(Type entityType, string memberName, string memberValue)
+        private Expression MakePropertyIntClause(ParameterExpression parameterExpression, string memberName, string memberValue)
+        {
+            Expression fieldProperty = Expression.Property(parameterExpression, memberName);
+            // Expression fieldClause = Expression.Equal(fieldProperty, Expression.Constant(Convert.ToInt32(memberValue), typeof(int)));
+            return Expression.Equal(fieldProperty, Expression.Constant(Convert.ToInt32(memberValue), typeof(int)));
+            // return Expression.Equal(fieldProperty, Expression.Constant(memberValue));
+        }
+
+        private Expression<Func<User, bool>> MakePropertyStringClauseB(IDictionary<string, string> queryParams)
+        {
+            // Time to build up the clause in the ANY field
+            ParameterExpression parameterExpression = Expression.Parameter(typeof(User), "u"); // u =>
+
+            Expression where = null;
+
+            foreach (KeyValuePair<string, string> kvp in queryParams)
+            {
+                if (kvp.Key != "sort")
+                {
+                    Expression fieldProperty = Expression.Property(parameterExpression, kvp.Key);
+                    Expression fieldClause = Expression.Equal(fieldProperty, Expression.Constant(kvp.Value));
+
+                    if (where == null)
+                    {
+                        where = fieldClause;
+                    }
+                    else
+                    {
+                        where = Expression.And(where, fieldClause);
+                    }
+                }
+            }
+
+            return Expression.Lambda<Func<User, bool>>(where, parameterExpression);
         }
     }
 }

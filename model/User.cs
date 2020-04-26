@@ -23,9 +23,9 @@ namespace App.Data.Model
         public string ShortName { get; set; }
         public DateTime? Birthday { get; set; }
         public int DominantHandId { get; set; }
-        public DominantHand DominantHand { get; set; }
+        public virtual DominantHand DominantHand { get; set; }
         public int BackhandStyleId { get; set; }
-        public BackhandStyle BackhandStyle { get; set; }
+        public virtual BackhandStyle BackhandStyle { get; set; }
         public int? Weight { get; set; }
         public int? Height { get; set; }
         [JsonIgnore]

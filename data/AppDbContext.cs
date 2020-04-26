@@ -1,7 +1,8 @@
 using System.Reflection;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 using App.Data.Model;
 using Core.Configuration;
@@ -12,23 +13,31 @@ namespace App.Data
     public class AppDbContext : DbContext
     {
         // private readonly ConfigurationItems _configurationItems;
+        public static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddFilter((category, level) =>
+                    category == DbLoggerCategory.Database.Command.Name &&
+                    level == LogLevel.Information)
+                .AddConsole();
+        });
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
         }
-/*         public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<ConfigurationItems> configurationItems) : base(options)
-        {
-            _configurationItems = configurationItems.Value;
-        } */
+        /*         public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<ConfigurationItems> configurationItems) : base(options)
+                {
+                    _configurationItems = configurationItems.Value;
+                } */
 
-/*         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var sql = _configurationItems.SqlConnectionString;
-            //Inject IOptions<ConfigurationItems> configurationItems in the constructor
-            //get ConnectionString thru something like configurationItems.GetSection("ConfigurationItems")["SqlConnectionString"])
-            optionsBuilder.UseSqlServer(sql);
-        } */
+            optionsBuilder
+                .UseLoggerFactory(loggerFactory);
+
+            // optionsBuilder.UseLazyLoadingProxies();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
