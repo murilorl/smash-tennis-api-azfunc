@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.JsonPatch;
 
-using App.Data.Model;
+using App.Data.Model.Users;
 
 namespace App.Service
 {

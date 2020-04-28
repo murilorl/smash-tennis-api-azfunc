@@ -15,17 +15,23 @@ namespace azfunc_api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("App.Data.Model.BackhandStyle", b =>
+            modelBuilder.Entity("App.Data.Model.Users.PlayStyle", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PlayStyleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("ID")
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DominatHand")
+                        .IsRequired()
+                        .HasColumnName("DOMINANT_HAND")
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -33,80 +39,56 @@ namespace azfunc_api.Migrations
                         .HasColumnType("nvarchar(70)")
                         .HasMaxLength(70);
 
-                    b.HasKey("Id");
+                    b.HasKey("PlayStyleId");
 
-                    b.ToTable("BACKHAND_STYLES");
+                    b.ToTable("PLAY_STYLE");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Name = "Uma mão"
+                            PlayStyleId = 1,
+                            DominatHand = "Direita",
+                            Name = "Destro; Backhand uma mão."
                         },
                         new
                         {
-                            Id = 2,
-                            Name = "Duas mãos"
+                            PlayStyleId = 2,
+                            DominatHand = "Direita",
+                            Name = "Destro; Backhand duas mãos."
+                        },
+                        new
+                        {
+                            PlayStyleId = 3,
+                            DominatHand = "Esquerda",
+                            Name = "Canhoto; Backhand uma mãos."
+                        },
+                        new
+                        {
+                            PlayStyleId = 4,
+                            DominatHand = "Esquerda",
+                            Name = "Canhoto; Backhand duas mãos."
                         });
                 });
 
-            modelBuilder.Entity("App.Data.Model.DominantHand", b =>
+            modelBuilder.Entity("App.Data.Model.Users.Role", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("ID")
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AltName")
-                        .IsRequired()
-                        .HasColumnName("ALT_NAME")
-                        .HasColumnType("nvarchar(30)")
-                        .HasMaxLength(30);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("NAME")
-                        .HasColumnType("nvarchar(70)")
-                        .HasMaxLength(70);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DOMINANT_HAND");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AltName = "Destro",
-                            Name = "Direita"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AltName = "Canhoto",
-                            Name = "Esquerda"
-                        });
-                });
-
-            modelBuilder.Entity("App.Data.Model.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ACTIVE")
-                        .HasColumnType("BIT")
-                        .HasDefaultValue(true);
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("CREATED")
                         .HasColumnType("DATETIME2")
                         .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("DELETED")
+                        .HasColumnType("BIT")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -120,44 +102,35 @@ namespace azfunc_api.Migrations
                         .HasColumnType("DATETIME2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.HasKey("Id");
+                    b.HasKey("RoleId");
 
                     b.ToTable("ROLES");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("56be8eb9-9464-4de3-a744-577e46e3fee5"),
-                            Active = false,
+                            RoleId = 1,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
                             Name = "Administrador",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("8fa145f7-5d50-4277-8cc0-8da6448c98cd"),
-                            Active = false,
+                            RoleId = 2,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
                             Name = "Tenista",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
-            modelBuilder.Entity("App.Data.Model.User", b =>
+            modelBuilder.Entity("App.Data.Model.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("ID")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ACTIVE")
-                        .HasColumnType("BIT")
-                        .HasDefaultValue(true);
-
-                    b.Property<int>("BackhandStyleId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("Birthday")
                         .HasColumnName("BIRTHDAY")
@@ -168,9 +141,6 @@ namespace azfunc_api.Migrations
                         .HasColumnName("CREATED")
                         .HasColumnType("DATETIME2")
                         .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("DominantHandId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -193,6 +163,12 @@ namespace azfunc_api.Migrations
                         .HasColumnName("HEIGHT")
                         .HasColumnType("INT");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("DELETED")
+                        .HasColumnType("BIT")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTime>("LastLogin")
                         .HasColumnName("LAST_LOGIN")
                         .HasColumnType("DATETIME2");
@@ -213,6 +189,9 @@ namespace azfunc_api.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
+                    b.Property<int>("PlayStyleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ShortName")
                         .IsRequired()
                         .HasColumnName("SHORT_NAME")
@@ -231,17 +210,15 @@ namespace azfunc_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BackhandStyleId");
-
-                    b.HasIndex("DominantHandId");
-
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("PlayStyleId");
 
                     b.ToTable("USERS");
                 });
 
-            modelBuilder.Entity("App.Data.Model.UserRoles", b =>
+            modelBuilder.Entity("App.Data.Model.Users.UserRoles", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -249,38 +226,32 @@ namespace azfunc_api.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("RoleId1")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleId1");
 
                     b.ToTable("USER_ROLES");
                 });
 
-            modelBuilder.Entity("App.Data.Model.User", b =>
+            modelBuilder.Entity("App.Data.Model.Users.User", b =>
                 {
-                    b.HasOne("App.Data.Model.BackhandStyle", "BackhandStyle")
-                        .WithMany("Users")
-                        .HasForeignKey("BackhandStyleId")
-                        .HasConstraintName("FK_BACKHAND_STYLE_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("App.Data.Model.DominantHand", "DominantHand")
-                        .WithMany("Users")
-                        .HasForeignKey("DominantHandId")
+                    b.HasOne("App.Data.Model.Users.PlayStyle", "PlayStyle")
+                        .WithMany()
+                        .HasForeignKey("PlayStyleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("App.Data.Model.UserRoles", b =>
+            modelBuilder.Entity("App.Data.Model.Users.UserRoles", b =>
                 {
-                    b.HasOne("App.Data.Model.Role", "Role")
+                    b.HasOne("App.Data.Model.Users.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleId1");
 
-                    b.HasOne("App.Data.Model.User", "User")
+                    b.HasOne("App.Data.Model.Users.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using App.Data.Model.Users;
+
 namespace App.Data.Model.Configuration
 {
     public class UserRoleConfiguration : IEntityTypeConfiguration<UserRoles>

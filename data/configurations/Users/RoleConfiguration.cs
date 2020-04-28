@@ -2,6 +2,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using App.Data.Model.Users;
+
 namespace App.Data.Model.Configuration
 {
     public class RoleConfiguration : IEntityTypeConfiguration<Role>
@@ -10,12 +12,12 @@ namespace App.Data.Model.Configuration
         {
             builder
                 .ToTable("ROLES")
-                .HasKey(u => u.Id);
+                .HasKey(u => u.RoleId);
 
             // Foreign keys
 
             //Entity attributes
-            builder.Property(u => u.Id)
+            builder.Property(u => u.RoleId)
                 .HasColumnName("ID");
 
             builder.Property(u => u.Created)
@@ -30,10 +32,10 @@ namespace App.Data.Model.Configuration
                 .HasDefaultValueSql("GETDATE()")
                 .IsRequired();
 
-            builder.Property(u => u.Active)
-                .HasColumnName("ACTIVE")
+            builder.Property(u => u.IsDeleted)
+                .HasColumnName("DELETED")
                 .HasColumnType("BIT")
-                .HasDefaultValue(1)
+                .HasDefaultValue(0)
                 .IsRequired();
 
             builder.Property(u => u.Name)
@@ -46,12 +48,12 @@ namespace App.Data.Model.Configuration
                 .HasData(
                     new Role
                     {
-                        Id = Guid.NewGuid(),
+                        RoleId = 1,
                         Name = "Administrador",
                     },
                     new Role
                     {
-                        Id = Guid.NewGuid(),
+                        RoleId = 2,
                         Name = "Tenista"
                     }
                 );

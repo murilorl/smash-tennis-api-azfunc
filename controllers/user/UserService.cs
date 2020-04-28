@@ -11,10 +11,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
 using App.Data;
-using App.Data.Model;
+using App.Data.Model.Users;
 using App.Exceptions.Auth;
 using App.Service.Auth;
-
 
 namespace App.Service
 {
@@ -45,7 +44,7 @@ namespace App.Service
         public async Task<IList<User>> GetAllUsers()
         {
             return await _context.Users
-                .Include(u => u.DominantHand)
+                .Include(u => u.PlayStyle)
                 .OrderBy(u => u.FirstName)
                 .ToListAsync();
         }
@@ -54,17 +53,17 @@ namespace App.Service
         {
             IQueryable<User> result = null;
 
-            if (QueryableUtil.IncludeInactive(queryParams))
+            if (QueryableUtil.IncludeDeleted(queryParams))
             {
                 result = _context.Users
-                .Include(u => u.DominantHand)
+                .Include(u => u.PlayStyle)
                 .IgnoreQueryFilters()
                 .AsQueryable();
             }
             else
             {
                 result = _context.Users
-               .Include(u => u.DominantHand)
+               .Include(u => u.PlayStyle)
                .AsQueryable();
             }
 
@@ -197,7 +196,7 @@ namespace App.Service
             }
 
             cUser.Updated = DateTime.Now;
-            cUser.Active = false;
+            cUser.IsDeleted = true;
 
             _context.Users.Update(cUser);
             await _context.SaveChangesAsync();

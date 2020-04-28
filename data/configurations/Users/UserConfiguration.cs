@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using App.Data.Model.Users;
+
 namespace App.Data.Model.Configuration
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
@@ -18,20 +20,8 @@ namespace App.Data.Model.Configuration
                  .HasIndex(p => p.Email)
                  .IsUnique();
 
-/*             // Foreign keys
-            builder
-                .HasOne<BackhandStyle>(u => u.BackhandStyle)
-                .WithMany(bhs => bhs.Users)
-                .HasForeignKey(u => u.BackhandStyleId)
-                .HasConstraintName("FK_BACKHAND_STYLE_ID"); */
-
-            /*             builder
-                            .HasOne<DominantHand>(u => u.DominantHand)
-                            .WithMany(dh => dh.Users)
-                            .HasForeignKey(u => u.DominantHandId); */
-
             //Query fitlers; for things like 'soft delete'
-            builder.HasQueryFilter(e => e.Active == true);
+            builder.HasQueryFilter(e => e.IsDeleted != true);
 
             //Entity attributes
             builder.Property(u => u.Id)
@@ -49,17 +39,16 @@ namespace App.Data.Model.Configuration
                 .HasDefaultValueSql("GETDATE()")
                 .IsRequired();
 
-            builder.Property(u => u.Active)
-                .HasColumnName("ACTIVE")
+            builder.Property(u => u.IsDeleted)
+                .HasColumnName("DELETED")
                 .HasColumnType("BIT")
-                .HasDefaultValue(1)
+                .HasDefaultValue(0)
                 .IsRequired();
 
             builder.Property(u => u.Email)
                 .HasColumnName("EMAIL")
                 .HasMaxLength(70)
                 .IsRequired();
-
 
             builder.Property(u => u.FirstName)
                 .HasColumnName("FIRST_NAME")

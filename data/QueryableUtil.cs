@@ -10,11 +10,11 @@ namespace App.Data
 {
     public class QueryableUtil
     {
-        public static bool IncludeInactive(IDictionary<string, string> queryParams)
+        public static bool IncludeDeleted(IDictionary<string, string> queryParams)
         {
             return queryParams != null
-                && queryParams.ContainsKey("IncludeInactive")
-                && queryParams["IncludeInactive"].Equals("true");
+                && queryParams.ContainsKey("IncludeDeleted")
+                && queryParams["IncludeDeleted"].Equals("true");
         }
  /*        public static void IgnoreQueryFilters(IQueryable<object> result, IDictionary<string, string> queryParams)
         {

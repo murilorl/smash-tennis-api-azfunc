@@ -1,10 +1,13 @@
 using System.Reflection;
 
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
+
+
 
 using App.Data.Model;
+using App.Data.Model.Users;
 using Core.Configuration;
 
 namespace App.Data
@@ -26,10 +29,12 @@ namespace App.Data
         {
 
         }
-        /*         public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<ConfigurationItems> configurationItems) : base(options)
-                {
-                    _configurationItems = configurationItems.Value;
-                } */
+        /*
+        public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<ConfigurationItems> configurationItems) : base(options)
+        {
+            _configurationItems = configurationItems.Value;
+        }
+        */
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -46,8 +51,7 @@ namespace App.Data
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<BackhandStyle> BackhandStyles { get; set; }
-        public DbSet<DominantHand> DominantHands { get; set; }
+        public DbSet<PlayStyle> PlayStyles { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
     }
